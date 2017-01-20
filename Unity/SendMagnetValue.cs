@@ -22,7 +22,7 @@ namespace UniOSC{
 	/// </summary>
 
 	[ExecuteInEditMode]
-	public class SendtoArdiByOSC: UniOSCEventDispatcher {
+	public class SendMagnetValue: UniOSCEventDispatcher {
 
 		private bool ledOnOff;
 
@@ -137,7 +137,7 @@ namespace UniOSC{
 
 
 		void Update() {
-			
+
 			value = (int)slider.value;
 			valueTex.text = value.ToString();
 			//Debug.Log("Strength : " + value.ToString());
