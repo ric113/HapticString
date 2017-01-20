@@ -11,7 +11,12 @@ HapticString
 #### RecvEncoderValue.cs	:
 > - 1. 負責接收Arduino端藉由OSC送來的Encoder Value .
 
-#### SendMagnetValue.cs
+#### SendMagnetValue.cs :
 > - 1. 負責藉由OSC送值去Arduino端控制電磁鐵 .
+
+#### 待新增 :
+##### TouchManager :
+> - 1. 監控收到的Encoder值 (in Update()) .
+> - 2. 判斷是否Touch到Object , call SendMagnetValue 去控制相對應磁力 .
     
     
