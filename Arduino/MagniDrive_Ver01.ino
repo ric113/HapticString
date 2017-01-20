@@ -49,20 +49,118 @@ WiFiUDP Udp_send;
 WiFiUDP Udp_listen;
 /* ---------------------------------------- */
 
+/* Rotary Encoder Part Variables */
+//adafruit
+int encoderPin1 = 12; 
+int encoderPin2 = 13;
+volatile int lastEncoded = 0;
+volatile long encoderValue = 0;
+long lastencoderValue = 0;
+int lastMSB = 0;
+int lastLSB = 0;
+/* -------------------------------------- */
+
 int value ;
 
 void setup() 
 {
   Serial.begin(9600);           // set up Serial library at 9600 bps
 
+  initMotor();
+  initWifi();
+  initEncoder();
+}
+
+void loop() {
+
+  /* Serial Port Version .
+  while(1){
+    if(Serial.available() > 0)
+    {
+      
+    //  String pin_string = Serial.readStringUntil('.');
+    //  if(pin_string!=""){
+    //        String pwm_string = Serial.readStringUntil(':');
+    //        int int_pwm = pwm_string.toInt();
+    //
+    //        Serial.println(int_pwm);
+    //        myMotor->setSpeed(int_pwm);
+    //   }
+       
+      
+      value = Serial.parseInt();
+      Serial.println(value);
+      myMotor->setSpeed(value);
+      Serial.parseInt();      // 把parseInt()後多出來的'0'讀掉 
+    }
+  */
+
+  /* OSC Version */
+  // Read
+  OSCMessage messageIn;
+  int size;
+  if( (size = Udp_listen.parsePacket())>0)
+  {
+    while(size--)
+      messageIn.fill(Udp_listen.read());
+    if(!messageIn.hasError())
+    { 
+      int data = messageIn.getInt(0); 
+      //Serial.println(messageIn.size());
+      //Serial.println(data);
+      // setting intensity of the LED
+      //int fadeValue = data; 
+      //analogWrite(ledPin, fadeValue);
+      value = data ;
+      //Serial.println(value);
+      myMotor->setSpeed(value);
+
+    }
+  }
+
+  // Write
+  OSCMessage msg("/1/fader1");
+  msg.add(encoderValue);
+  // msg.add(sensorValue);
+  Udp_send.beginPacket(sendToUnityPC_Ip, sendToUnityPC_Port);
+  msg.send(Udp_send);
+  Udp_send.endPacket();
+  msg.empty();
+  delay(10);
+
   
+}
+
+void printWifiStatus() 
+{
+  
+  // print the SSID of the network you're attached to:
+  Serial.print("SSID: ");
+  Serial.println(WiFi.SSID());
+  
+  // print your WiFi shield's IP address:
+  IPAddress ip = WiFi.localIP();
+  Serial.print("IP Address: ");
+  Serial.println(ip);
+  
+  // print the received signal strength:
+  long rssi = WiFi.RSSI();
+  Serial.print("signal strength (RSSI):");
+  Serial.print(rssi);
+  Serial.println(" dBm");
+}
+
+void initMotor()
+{
   AFMS.begin();  // create with the default frequency 1.6KHz
   //AFMS.begin(1000);  // OR with a different frequency, say 1KHz
   
   myMotor->run(FORWARD);
   Serial.setTimeout(10);   /* 加快timeout 判斷 (default : 1s => too slow)*/
+}
 
-
+void initWifi()
+{
   //Configure pins for Adafruit ATWINC1500 Feather
   WiFi.setPins(8,7,4,2);
   //Initialize serial and wait for port to open:
@@ -94,82 +192,34 @@ void setup()
   // if you get a connection, report back via serial:
   Udp_send.begin(sendToUnityPC_Port);
   Udp_listen.begin(listenPort);
-  
 }
 
-void loop() {
-
-  /* Serial Port Version .
-  while(1){
-    if(Serial.available() > 0)
-    {
-      
-    //  String pin_string = Serial.readStringUntil('.');
-    //  if(pin_string!=""){
-    //        String pwm_string = Serial.readStringUntil(':');
-    //        int int_pwm = pwm_string.toInt();
-    //
-    //        Serial.println(int_pwm);
-    //        myMotor->setSpeed(int_pwm);
-    //   }
-       
-      
-      value = Serial.parseInt();
-      Serial.println(value);
-      myMotor->setSpeed(value);
-      Serial.parseInt();      // 把parseInt()後多出來的'0'讀掉 
-    }
-  */
-
-
-
-  /* OSC Version */
-  // Read
-  OSCMessage messageIn;
-  int size;
-  if( (size = Udp_listen.parsePacket())>0)
-  {
-    while(size--)
-      messageIn.fill(Udp_listen.read());
-    if(!messageIn.hasError())
-    { 
-      int data = messageIn.getInt(0); 
-      //Serial.println(messageIn.size());
-      //Serial.println(data);
-      // setting intensity of the LED
-      //int fadeValue = data; 
-      //analogWrite(ledPin, fadeValue);
-      value = data ;
-      //Serial.println(value);
-      myMotor->setSpeed(value);
-
-    }
-  }
-
-  
-
-  //delay(20);  
-  //delay(1000);
-  
-}
-
-void printWifiStatus() 
+void initEncoder()
 {
-  
-  // print the SSID of the network you're attached to:
-  Serial.print("SSID: ");
-  Serial.println(WiFi.SSID());
-  
-  // print your WiFi shield's IP address:
-  IPAddress ip = WiFi.localIP();
-  Serial.print("IP Address: ");
-  Serial.println(ip);
-  
-  // print the received signal strength:
-  long rssi = WiFi.RSSI();
-  Serial.print("signal strength (RSSI):");
-  Serial.print(rssi);
-  Serial.println(" dBm");
+  pinMode(encoderPin1, INPUT); 
+  pinMode(encoderPin2, INPUT);
+
+  digitalWrite(encoderPin1, HIGH); //turn pullup resistor on
+  digitalWrite(encoderPin2, HIGH); //turn pullup resistor on
+
+  //call updateEncoder() when any high/low changed seen
+  //on interrupt 0 (pin 2), or interrupt 1 (pin 3) 
+  attachInterrupt(digitalPinToInterrupt(encoderPin1), updateEncoder, CHANGE); 
+  attachInterrupt(digitalPinToInterrupt(encoderPin2), updateEncoder, CHANGE);
 }
+
+void updateEncoder(){
+  int MSB = digitalRead(encoderPin1); //MSB = most significant bit
+  int LSB = digitalRead(encoderPin2); //LSB = least significant bit
+
+  int encoded = (MSB << 1) |LSB; //converting the 2 pin value to single number
+  int sum  = (lastEncoded << 2) | encoded; //adding it to the previous encoded value
+
+  if(sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011) encoderValue ++;
+  if(sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000) encoderValue --;
+
+  lastEncoded = encoded; //store this value for next time
+}
+
 
 
