@@ -5,6 +5,6 @@ HapticString
 > - 1. 控制電磁鐵磁力
 > - 2. 接收RotaryEncoder的值
 > - 3. 透過OSC(與Unity)連線
-    
+> - 特別注意 : 第43行之IP Address , 須為PC local IP .
     
     
