@@ -35,10 +35,6 @@ namespace UniOSC{
 		private int value = 0;
 		private int preValue = -1;
 
-		//[HideInInspector]
-		//public TouchManager touchManager;
-
-
 
 		public override void Awake ()
 		{

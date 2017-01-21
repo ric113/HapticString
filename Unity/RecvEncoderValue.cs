@@ -20,8 +20,6 @@ namespace UniOSC{
 	//[AddComponentMenu("UniOSC/ScaleGameObject")]
 	public class RecvEncoderValue :  UniOSCEventTarget {
 
-		//public TouchManager touchManager ;
-
 		[HideInInspector]
 		public int encoderValue;
 
@@ -36,14 +34,10 @@ namespace UniOSC{
 
 			encoderValue = (int)msg.Data[0];
 
-			//touchManager.encoderValue = encoderValue;
-
 			Debug.Log (encoderValue);
 
 		}
-
-
-
+			
 	}
 }
 
