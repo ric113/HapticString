@@ -24,7 +24,6 @@ namespace UniOSC{
 	[ExecuteInEditMode]
 	public class SendMagnetValue: UniOSCEventDispatcher {
 
-		private bool ledOnOff;
 
 		public int dynamicIntValue= 100;
 		public float dynamicFloatValue= 120;
@@ -35,6 +34,9 @@ namespace UniOSC{
 
 		private int value = 0;
 		private int preValue = -1;
+
+		//[HideInInspector]
+		//public TouchManager touchManager;
 
 
 
@@ -152,6 +154,7 @@ namespace UniOSC{
 
 
 		}
+
 
 	}
 }

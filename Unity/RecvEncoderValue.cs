@@ -13,53 +13,37 @@ using OSCsharp.Data;
 
 namespace UniOSC{
 
+
 	/// <summary>
 	/// Uni OSC scale game object.
 	/// </summary>
 	//[AddComponentMenu("UniOSC/ScaleGameObject")]
 	public class RecvEncoderValue :  UniOSCEventTarget {
 
+		//public TouchManager touchManager ;
+
 		[HideInInspector]
-		//public Transform transformToScale;
-		//public float scaleFactor = 1;
-
-		//private Vector3 _scale;
-		//private float _data;
-
-
-		void Awake(){
-
-		}
-
-		//private void _Init(){
-		//	if(transformToScale == null){
-		//		Transform hostTransform = GetComponent<Transform>();
-		//		if(hostTransform != null) transformToScale = hostTransform;
-		//	}
-		//}
+		public int encoderValue;
 
 		public override void OnEnable(){
-			//_Init();
 			base.OnEnable();
 		}
 
 		public override void OnOSCMessageReceived(UniOSCEventArgs args){
 
-			//if(transformToScale == null) return;
 			OscMessage msg = (OscMessage)args.Packet;
 			if(msg.Data.Count <1) return;
 
-			int intKnob = (int)msg.Data[0];
+			encoderValue = (int)msg.Data[0];
 
-			//_data = intKnob / 1023.0f;
-			//_data*= scaleFactor;
-			//_scale.Set(_data,_data,_data);
+			//touchManager.encoderValue = encoderValue;
 
-			//transformToScale.localScale = _scale;
-
-			Debug.Log (intKnob);
+			Debug.Log (encoderValue);
 
 		}
 
+
+
 	}
 }
+
