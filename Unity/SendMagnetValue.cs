@@ -26,15 +26,15 @@ namespace UniOSC{
 
 
 		public int dynamicIntValue= 100;
-		public float dynamicFloatValue= 120;
-		public string dynamicStringValue= "Test";
 
 		public Slider slider;
-		public Text valueTex;
+		public Text magneticPWMText;
 
-		private int value = 0;
-		private int preValue = -1;
+		private int magneticPWMValue = 0;
+		private int preMagneticPWMValue = -1;
 
+		public FingerForward fingerJudge;
+		public TouchManager touchJudge;
 
 		public override void Awake ()
 		{
@@ -136,21 +136,31 @@ namespace UniOSC{
 
 		void Update() {
 
-			value = (int)slider.value;
-			valueTex.text = value.ToString();
 			//Debug.Log("Strength : " + value.ToString());
 
-			if (preValue != value) {		//當停留在某值時 , 不會一直送 
-				preValue = value;
-				Debug.Log ("Send" + value.ToString());
-				dynamicIntValue = value;
-				MySendOSCMessageTriggerMethod();
+			setmagneticPWM ();
+
+			if (preMagneticPWMValue != magneticPWMValue) {		//當停留在某值時 , 不會一直送 
+				preMagneticPWMValue = magneticPWMValue;
+				Debug.Log ("Send" + magneticPWMValue.ToString ());
+				dynamicIntValue = magneticPWMValue;
+				MySendOSCMessageTriggerMethod ();
 
 			}
 
-
+			magneticPWMText.text = magneticPWMValue.ToString();
 		}
 
+		private void setmagneticPWM(){
+			if (fingerJudge.fingerForward ()) {						/* Need to be modify !*/
+				if (touchJudge.isTouch ())
+					magneticPWMValue = touchJudge.getRelativePWM ();
+				else
+					magneticPWMValue = (int)slider.value;
+			}
+			else
+				magneticPWMValue = 0;
+		}
 
 	}
 }

@@ -60,6 +60,11 @@ int lastMSB = 0;
 int lastLSB = 0;
 /* -------------------------------------- */
 
+/* Pressure Sensor Part Variables */
+int pressureSensorPin = 6;
+int pressureValue ;
+/* ------------------------------*/
+
 int value ;
 
 void setup() 
@@ -69,6 +74,7 @@ void setup()
   initMotor();
   initWifi();
   initEncoder();
+  initPressureSensor();
 }
 
 void loop() {
@@ -96,7 +102,7 @@ void loop() {
   */
 
   /* OSC Version */
-  // Read
+  // Read from Unity
   OSCMessage messageIn;
   int size;
   if( (size = Udp_listen.parsePacket())>0)
@@ -118,14 +124,26 @@ void loop() {
     }
   }
 
-  // Write
-  OSCMessage msg("/1/fader1");
-  msg.add(encoderValue);
+  // Write to Unity
+  OSCMessage Encodermsg("/1/fader1");
+  Encodermsg.add(encoderValue);
   // msg.add(sensorValue);
   Udp_send.beginPacket(sendToUnityPC_Ip, sendToUnityPC_Port);
-  msg.send(Udp_send);
+  Encodermsg.send(Udp_send);
   Udp_send.endPacket();
-  msg.empty();
+  Encodermsg.empty();
+
+
+  pressureValue = digitalRead(pressureSensorPin);
+  OSCMessage Pressuremsg("/1/fader2");
+  Pressuremsg.add(pressureValue);
+  Udp_send.beginPacket(sendToUnityPC_Ip, sendToUnityPC_Port);
+  Pressuremsg.send(Udp_send);
+  Udp_send.endPacket();
+  Pressuremsg.empty();
+
+
+
   delay(10);
 
   
@@ -219,6 +237,10 @@ void updateEncoder(){
   if(sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000) encoderValue --;
 
   lastEncoded = encoded; //store this value for next time
+}
+
+void initPressureSensor(){
+  pinMode(pressureSensorPin, INPUT);
 }
 
 

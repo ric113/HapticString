@@ -23,12 +23,12 @@ namespace UniOSC{
 
 
 		public Text lengthText;
-		[HideInInspector]
-		public int encoderValue;
 
+		private int encoderValue;
 		private bool isSetInitEncoderValue = false;
 		private int initEncoderValue;
-		const float lengthPerValue = 0.043175f ;
+		const float lengthPerValue = 0.053175f - 0.001f;
+		private float length = 0.0f;
 
 		public override void OnEnable(){
 			base.OnEnable();
@@ -48,17 +48,21 @@ namespace UniOSC{
 			}
 
 			//Debug.Log (encoderValue);
-			getLength(encoderValue);
+			transfer2Length(encoderValue);
 
 		}
 
-		private void getLength(int value)
+		private void transfer2Length(int value)
 		{
-			float length;
 			length = -1.0f * (value - initEncoderValue) * lengthPerValue;
-			lengthText.text = length.ToString ();
+			lengthText.text = "Length: " + length.ToString ();
 			Debug.Log ("Length = " + length.ToString ());
 		}
+
+		public float getLength(){
+			return length;
+		}
+			
 			
 	}
 }
