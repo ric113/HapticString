@@ -61,7 +61,7 @@ int lastLSB = 0;
 /* -------------------------------------- */
 
 /* Pressure Sensor Part Variables */
-int pressureSensorPin = 6;
+int pressureSensorPin = A0;
 int pressureValue ;
 /* ------------------------------*/
 
@@ -74,7 +74,7 @@ void setup()
   initMotor();
   initWifi();
   initEncoder();
-  initPressureSensor();
+  //initPressureSensor();
 }
 
 void loop() {
@@ -134,7 +134,8 @@ void loop() {
   Encodermsg.empty();
 
 
-  pressureValue = digitalRead(pressureSensorPin);
+  pressureValue = analogRead(pressureSensorPin);
+  Serial.println(pressureValue);
   OSCMessage Pressuremsg("/1/fader2");
   Pressuremsg.add(pressureValue);
   Udp_send.beginPacket(sendToUnityPC_Ip, sendToUnityPC_Port);
