@@ -16,13 +16,22 @@ public class ButtonCurvedEffect : MonoBehaviour {
     private void Start()
     {
         renderer = transform.GetComponent<Renderer>();
+
+        //create the pivot point (for rotate the button horizontally)
+        pivot_point = new GameObject();
     }
 
     // Use this for initialization
     public void setButton () {
+        //reset all the status
+        pivot_point.transform.parent = null;
+        this.transform.parent = null;
+        pivot_point.transform.position = this.transform.position = new Vector3(0, 0, 0);
+        pivot_point.transform.localScale = this.transform.localScale = new Vector3(1, 1, 1);
+        pivot_point.transform.rotation = this.transform.rotation = Quaternion.identity;
         //create the pivot point (for rotate the button horizontally)
-        pivot_point = new GameObject();
         pivot_point.transform.position = sphere.transform.position;
+        pivot_point.transform.parent = sphere.transform;
 
         //Attach the Plane on the Sphere
         Mesh newmesh = new Mesh();
@@ -54,7 +63,6 @@ public class ButtonCurvedEffect : MonoBehaviour {
         GetComponent<MeshCollider>().sharedMesh = mesh;
         mesh.RecalculateBounds();
         this.transform.parent = pivot_point.transform;
-        pivot_point.transform.parent = sphere.transform;
         this.GetComponent<MeshRenderer>().enabled = true;
         pivot_point.transform.Rotate(Vector3.up, angle_horizontal, Space.World);
 	}
