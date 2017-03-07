@@ -28,7 +28,7 @@ public class sphereGenerator : MonoBehaviour
     public getLeapMotionComponent getIndexFingerInfo;
     public GameObject SphereUI;
     public GameObject LeapMotionController;
-    public GameObject Button;
+    public GameObject[] Buttons;
     private int currentPointCount = 0;
     private Vector3 offsetToEye = new Vector3(0f,0f,0f);
 
@@ -225,7 +225,10 @@ public class sphereGenerator : MonoBehaviour
         SphereUI.transform.localScale = 1.001f * (new Vector3(sphereRadius / RADIUS_TO_SCALE_CONSTANS, sphereRadius / RADIUS_TO_SCALE_CONSTANS, sphereRadius / RADIUS_TO_SCALE_CONSTANS));
         //SphereUI.transform.rotation = LeapMotionController.transform.rotation;
         SphereUI.SetActive(true);
-        Button.GetComponent<ButtonCurvedEffect>().setButton();
+        for (int i = 0; i < Buttons.Length; i++)
+        {
+            Buttons[i].GetComponent<ButtonCurvedEffect>().setButton();
+        }
     }
 
     private void resetSphereUI() {
