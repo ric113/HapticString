@@ -28,3 +28,17 @@ HapticString
 > - 1. 藉由pressure sensor value , 判斷Finger是往前還是往後 .
 > - 2. 提供fingerForward()給SendMagnetValue.cs呼叫 .
     
+
+-------------
+### VRSphereUI Version : /Unity/VRSphereUI
+#### getLeapMotionComponent.cs :
+> - 1. 使用Leap Motion API , 取得手的相關資訊 .
+> - 2. 目前透過 public func getIndexTipPos() 來讓外界取得Index finger指尖的位置 .
+
+#### sphereGenerator.cs :
+> - 1. Real time 產生一個Sphere UI .
+> - 2. User須先將手指拉至欲產生SphereUI位置, 按下'Enter'開始收集球面上的Point data .
+> - 3. 使用收集到的Point data進行least square來fit出一個Sphere .
+
+#### ButtonCurvedEffect.cs :
+> - 1. 建構Curved button(由Plane產生), 並貼在SphereUI上 .
